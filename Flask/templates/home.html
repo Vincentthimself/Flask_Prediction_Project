@@ -1,0 +1,28 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.first_name }}!</h1>
+    <p>Explore the latest forex trends and data visualizations.</p>
+
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('views.index') }}">View Forex Charts</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>Forex Highlights</h2>
+        <p>Stay updated with the latest forex market trends.</p>
+        <!-- Add dynamic content or highlights here -->
+    </section>
+</body>
+</html>
+
+{% endblock %}

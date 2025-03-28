@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="text-align: center;">Forex Data Analysis</h1>
+
+<!-- Main Container -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Sidebar (1/4 screen width) -->
+        <div class="col-md-3 d-flex flex-column align-items-center justify-content-center p-3" style="background: #f8f9fa; height: 200;">
+            <h4>Select Currency Pair</h4>
+            <div class="btn-group-container">
+                <div class="btn-group-row">
+                    <button type="button" class="option-btn" data-value="EUR/USD" onclick="selectOption('currency', this)"
+                        style="background-color: {% if selected_pair == 'EUR/USD' %}green{% else %}#007BFF{% endif %};">
+                        EUR/USD
+                    </button>
+                    <button type="button" class="option-btn" data-value="JPY/USD" onclick="selectOption('currency', this)"
+                        style="background-color: {% if selected_pair == 'JPY/USD' %}green{% else %}#007BFF{% endif %};">
+                        JPY/USD
+                    </button>
+                </div>
+                <div class="btn-group-row">
+                    <button type="button" class="option-btn" data-value="GBP/USD" onclick="selectOption('currency', this)"
+                        style="background-color: {% if selected_pair == 'GBP/USD' %}green{% else %}#007BFF{% endif %};">
+                        GBP/USD
+                    </button>
+                    <button type="button" class="option-btn" data-value="AUD/USD" onclick="selectOption('currency', this)"
+                        style="background-color: {% if selected_pair == 'AUD/USD' %}green{% else %}#007BFF{% endif %};">
+                        AUD/USD
+                    </button>
+                </div>
+            </div>
+
+            <h4 class="mt-4">Select Timeframe</h4>
+            <div class="btn-group-container">
+                <div class="btn-group-row">
+                    <button type="button" class="option-btn" data-value="1m" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '1m' %}green{% else %}#007BFF{% endif %};">
+                        1M
+                    </button>
+                    <button type="button" class="option-btn" data-value="5m" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '5m' %}green{% else %}#007BFF{% endif %};">
+                        5M
+                    </button>
+                    <button type="button" class="option-btn" data-value="15m" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '15m' %}green{% else %}#007BFF{% endif %};">
+                        15M
+                    </button>
+                    <button type="button" class="option-btn" data-value="30m" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '30m' %}green{% else %}#007BFF{% endif %};">
+                        30M
+                    </button>
+                </div>
+                
+                <div class="btn-group-row">
+                    <button type="button" class="option-btn" data-value="60m" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '60m' %}green{% else %}#007BFF{% endif %};">
+                        1H
+                    </button>
+                    <button type="button" class="option-btn" data-value="1y" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '1y' %}green{% else %}#007BFF{% endif %};">
+                        1Y
+                    </button>
+                    <button type="button" class="option-btn" data-value="5y" onclick="selectOption('timeframe', this)"
+                        style="background-color: {% if selected_timeframe == '5y' %}green{% else %}#007BFF{% endif %};">
+                        5Y
+                    </button>
+                </div>
+            </div>
+            <br><br><br><br><br><br>
+            <button type="submit" class="start" onclick=''>Start Analyze</button>
+
+            <!-- Hidden form inputs to submit selections -->
+            <form id="chartForm" method="POST">
+                <input type="hidden" name="currency_pair" id="currency_pair_input" value="{{ selected_pair }}">
+                <input type="hidden" name="timeframe" id="timeframe_input" value="{{ selected_timeframe }}">
+            </form>
+        </div>
+
+        
+
+        <!-- Right Content (3/4 screen width) -->
+        <div class="col-md-9 d-flex align-items-center justify-content-center p-3">
+            {% if plot_path %}
+                <img src="{{ url_for('static', filename='plot.png') }}" alt="Forex Data Plot" class="img-fluid">
+            {% else %}
+                <p class="text-center">Please select a currency pair and timeframe to view the chart.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for selection handling -->
+<script>
+function selectOption(type, btn) {
+    if (type === 'currency') {
+        document.getElementById('currency_pair_input').value = btn.getAttribute("data-value");
+    } else if (type === 'timeframe') {
+        document.getElementById('timeframe_input').value = btn.getAttribute("data-value");
+    }
+
+    // Submit form when both selections are made
+    if (document.getElementById('currency_pair_input').value && document.getElementById('timeframe_input').value) {
+        document.getElementById('chartForm').submit();
+    }
+}
+</script>
+
+<!-- CSS Styling -->
+<style>
+.option-btn {
+    width: 100px;
+    height: 40px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.option-btn:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.option-btn:hover {
+    opacity: 0.8;
+}
+
+.btn-group-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-group-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+}
+    
+.start{
+    width: 250px;
+    height: 55px;
+    background-color: #FF2C2C;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+}
+
+</style>
+{% endblock %}

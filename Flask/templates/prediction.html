@@ -1,0 +1,13 @@
+{% extends "base1.html" %}
+
+{% block content %}
+<h1 style="text-align: center;">Forex Prediction for {{ selected_pair }} ({{ selected_timeframe }})</h1>
+{% if error %}
+    <p style="color: red; text-align: center;">{{ error }}</p>
+{% endif %}
+{% if prediction_plot_path %}
+    <div style="text-align: center;">
+        <img src="{{ url_for('static', filename='prediction.png') }}" alt="Prediction Chart" style="max-width: 100%; height: auto;">
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %} 
+{% block title %} Login Page {% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        text-align: center;
+    }
+    .login-container h3 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .form-group label {
+        display: none; /* Hide labels */
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px 40px 10px 40px; 
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    .form-group .fa {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+    }
+    .form-group .toggle-password-login {
+        position: absolute;
+        left: 90%; /* Adjusted to align the icon properly */
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .promptText {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+    .promptText a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .promptText a:hover {
+        text-decoration: underline;
+    }
+    .login-inner {
+        max-width: 400px; /* Fixed width for inner container */
+        margin: 0 auto;
+    }
+    .form-group .fa-envelope {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group .fa-lock {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+</style>
+
+<div class="login-container">
+  <div class="login-inner">
+    <form method="POST">
+        <h3>Sign in</h3>
+        <div class="form-group">
+            <i class="fa fa-envelope"></i>
+            <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email Address"
+                required
+            />
+        </div>
+        <div class="form-group">
+            <i class="fa fa-lock"></i>
+            <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Password"
+                required
+            />
+            <i class="fa fa-eye toggle-password-login" onclick="togglePasswordVisibility('password')"></i>
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+
+        <div class="promptText">
+            <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+        </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(id) {
+        var passwordInput = document.getElementById(id);
+        var toggleIcon = passwordInput.nextElementSibling;
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            toggleIcon.classList.remove("fa-eye-slash");
+            toggleIcon.classList.add("fa-eye");
+        }
+    }
+</script>
+{% endblock %}

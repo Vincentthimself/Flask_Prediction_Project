@@ -1,0 +1,185 @@
+{% extends "base.html" %} 
+{% block title %} Register Page {% endblock %}
+
+{% block content %}
+<style>
+    .register-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        text-align: center;
+    }
+    .register-container h3 {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px 10px 10px 40px; /* Add padding to make space for the icon */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+    .form-group .fa {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 30%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group .toggle-password {
+        position: absolute;
+        left: 90%; /* Adjusted to align the icon properly */
+        top: 25%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group .fa-envelope {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group .fa-lock {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 25%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group .fa-user {
+        position: absolute;
+        left: 15px; /* Adjusted to align the icon properly */
+        top: 25%;
+        transform: translateY(-50%);
+        color: #aaa;
+        font-size: 18px; /* Adjust icon size */
+    }
+    .form-group small {
+        display: block;
+        margin-top: 5px;
+        font-size: 10px;
+        color: #666;
+        text-align: left;
+    }
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .promptText {
+        margin-top: 20px;
+        font-size: 14px;
+    }
+    .promptText a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    .promptText a:hover {
+        text-decoration: underline;
+    }
+    .form-group #emailNoText{
+      margin-top: 30px;
+    }
+    .register-inner {
+        max-width: 400px; /* Fixed width for inner container */
+        margin: 0 auto;
+    }
+</style>
+
+<div class="register-container">
+  <div class="register-inner">
+    <form method="POST">
+        <h3>Create an account</h3>
+        <div class="form-group">
+            <i class="fa fa-envelope"></i>
+            <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="Email"
+                required
+            />
+            <small id="emailNoText"></small>
+        </div>
+
+        <div class="form-group">
+            <i class="fa fa-user"></i>
+            <input
+                type="text"
+                class="form-control"
+                id="first_name"
+                name="first_name"
+                placeholder="Username"
+                required
+            />
+            <small>Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.</small>
+        </div>
+
+        <div class="form-group">
+            <i class="fa fa-lock"></i>
+            <input
+                type="password"
+                class="form-control"
+                id="password1"
+                name="password1"
+                placeholder="Password"
+                required
+            />
+            <i class="fa fa-eye toggle-password" onclick="togglePasswordVisibility('password1')"></i>
+            <small>Password must be at least 8 characters long and include at least one number, one lowercase letter, one uppercase letter, and one special character.</small>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Continue</button>
+
+        <div class="promptText">
+            <p>Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+        </div>
+  
+    </form>
+  </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(id){
+      var passwordInput = document.getElementById(id);
+      var toggleIcon = passwordInput.nextElementSibling;
+      if(passwordInput.type === "password"){
+        passwordInput.type = "text";
+        toggleIcon.classList.remove("fa-eye");
+        toggleIcon.classList.add("fa-eye-slash")
+      }
+      else{
+        passwordInput.type = "password";
+        toggleIcon.classList.remove("fa-eye-slash");
+        toggleIcon.classList.add("fa-eye");
+      }
+  }
+</script>
+{% endblock %}
