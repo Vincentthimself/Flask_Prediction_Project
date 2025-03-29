@@ -4,24 +4,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Home1</title>
+
+    <title>Home</title>
+    <style>
+        :root{
+            --base-color: white;
+            --base-variant: white;
+            --text-color: black;
+            --secondary-text: black;
+            --primary-color: #3a435d;
+            --accent-color: #0071ff;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--base-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        #container{
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            margin: 10px;
+            text-align: center;
+        }
+        .dark-mode {
+            --base-color: #121212;
+            --base-variant: #101425;
+            --text-color: #ffffff;
+            --secondary-text: #a4a5b8;
+            --primary-color: #3a435d;
+            --accent-color: #0071ff;
+        }
+
+        /* .dark-mode .hero {
+            background: #222;
+        } */
+
+        #theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            margin: 0;
+            padding: 10px;
+            cursor: pointer;
+            background-color: var(--base-variant);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;    
+        }
+        
+        #theme-toggle svg {
+            width: 40px;
+            height: 40px;
+            fill: var(--primary-color);
+        }
+
+        #theme-toggle svg{
+            fill: var(--primary-color);
+        }
+        #theme-toggle svg:last-child{
+            display: none;
+        }
+        .dark-mode #theme-toggle svg:first-child{
+            display: none;
+        }
+        .dark-mode #theme-toggle svg:last-child{
+            display: block;
+        }
+        .hero {
+            background: url('/static/images/forex_background.jpg') no-repeat center center/cover;
+            color: var();
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 36px;
+        }
+        .cta-button {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        .card-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        .card-container .card{
+            color: var(--text-color);
+            background-color: var(--base-variant);
+        }
+    </style>
+
 </head>
-<body>
-    <h1>Welcome, {{ user.first_name }}!</h1>
-    <p>Explore the latest forex trends and data visualizations.</p>
+<body >
 
-    <nav>
-        <ul>
-            <li><a href="{{ url_for('views.index') }}">View Forex Charts</a></li>
-            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-        </ul>
-    </nav>
+    <button id="theme-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>  
+    </button>
 
-    <section>
-        <h2>Forex Highlights</h2>
-        <p>Stay updated with the latest forex market trends.</p>
-        <!-- Add dynamic content or highlights here -->
-    </section>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Welcome, {{ user.first_name }}!</h1>
+            <p>Analyze the latest forex trends with real-time data.</p>
+            <a href="{{ url_for('views.index') }}" class="cta-button">Analyze Forex Trends</a>
+        </section>
+
+        <!-- Navigation
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('views.index') }}">📊 View Forex Charts</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">🚪 Logout</a></li>
+            </ul>
+        </nav> -->
+
+        <!-- Forex Highlights Section -->
+        <section>
+            <h2>Forex Highlights</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3>Live Market Trends</h3>
+                    <p>Get the latest insights on currency price movements.</p>
+                </div>
+                <div class="card">
+                    <h3>Expert Predictions</h3>
+                    <p>See AI-driven forecasts for your favorite forex pairs.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Forex Rates (Placeholder) -->
+        <section>
+            <h2>Live Forex Rates</h2>
+            <p>Coming soon: Real-time forex data updates.</p>
+        </section>
+
+
+    </div>
+    
+
+    <script>
+        let darkmode = localStorage.getItem('dark-mode'); // Ensure consistent key usage
+        const themeToggle = document.getElementById('theme-toggle');
+    
+        const enableDarkmode = () => {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('dark-mode', 'active'); // Store "active"
+        };
+    
+        const disableDarkmode = () => {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('dark-mode', 'disabled'); // Use "disabled" instead of null
+        };
+    
+        // Apply dark mode if it was previously enabled
+        if (darkmode === "active") {
+            enableDarkmode();
+        }
+    
+        if (themeToggle) {
+            themeToggle.addEventListener("click", () => {
+                darkmode = localStorage.getItem('dark-mode'); // Get updated state
+    
+                if (darkmode === "active") {
+                    disableDarkmode();
+                } else {
+                    enableDarkmode();
+                }
+            });
+        }
+    </script>
+
 </body>
 </html>
 
