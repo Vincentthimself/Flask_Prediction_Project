@@ -1,13 +1,45 @@
-{% extends "base1.html" %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1 style="text-align: center;">Forex Prediction for {{ selected_pair }} ({{ selected_timeframe }})</h1>
+<h1 style="text-align: center;">Forex Prediction</h1>
+
+<form method="POST" action="/prediction_page" style="text-align: center;">
+    <label for="currency_pairs">Please select the currency pairs for predictions:</label>
+    <select name="currency_pairs" id="currency_pairs" required>
+        <option value="EURUSD=X" {% if currency_pairs == "EURUSD=X" %}selected{% endif %}>EUR/USD</option>
+        <option value="GBPUSD=X" {% if currency_pairs == "GBPUSD=X" %}selected{% endif %}>GBP/USD</option>
+        <option value="USDJPY=X" {% if currency_pairs == "USDJPY=X" %}selected{% endif %}>USD/JPY</option>
+        <option value="AUDUSD=X" {% if currency_pairs == "AUDUSD=X" %}selected{% endif %}>AUD/USD</option>
+        <option value="USDCAD=X" {% if currency_pairs == "USDCAD=X" %}selected{% endif %}>USD/CAD</option>
+    </select>
+    <br><br>
+    <label for="prediction_days">Number of days to predict:</label>
+    <input type="number" name="prediction_days" id="prediction_days" min="1" max="5" value="{{ prediction_days }}" required>
+    <br><br>
+    <button type="submit">Predict</button>
+</form>
+
 {% if error %}
     <p style="color: red; text-align: center;">{{ error }}</p>
 {% endif %}
-{% if prediction_plot_path %}
-    <div style="text-align: center;">
-        <img src="{{ url_for('static', filename='prediction.png') }}" alt="Prediction Chart" style="max-width: 100%; height: auto;">
-    </div>
+
+{% if predictions %}
+    <h2 style="text-align: center;">Prediction Results</h2>
+    <table style="margin: 0 auto; border-collapse: collapse; text-align: center;">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Predicted Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for date, prediction in predictions.items() %}
+                <tr>
+                    <td>{{ date }}</td>
+                    <td>{{ prediction['Predicted Price'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endif %}
 {% endblock %}
