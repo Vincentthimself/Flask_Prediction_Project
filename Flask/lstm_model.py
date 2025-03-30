@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 import tensorflow as tf 
-from tensorflow.keras.models import Sequential, load_model
-from tensorflow.keras.layers import LSTM, Dense, Dropout, BatchNormalization
+from keras.models import Sequential, load_model
+from keras.layers import LSTM, Dense, Dropout, BatchNormalization
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
