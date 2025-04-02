@@ -15,12 +15,12 @@ def create_app():
     # Import blueprints
     from .views import views
     from .auth import auth
-    # from .prediction import prediction  # Import the prediction blueprint
+    from .prediction import prediction  # Import the prediction blueprint
 
     # Register blueprints
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-    # app.register_blueprint(prediction, url_prefix='/')  # Register the prediction blueprint
+    app.register_blueprint(prediction, url_prefix='/')  # Register the prediction blueprint
 
     from .models import User
 

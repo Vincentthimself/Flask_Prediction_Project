@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 style="text-align: center;">Forex Prediction</h1>
 
-<form method="POST" action="/prediction_page" style="text-align: center;">
-    <label for="currency_pairs">Please select the currency pairs for predictions:</label>
-    <select name="currency_pairs" id="currency_pairs" required>
-        <option value="EURUSD=X" {% if currency_pairs == "EURUSD=X" %}selected{% endif %}>EUR/USD</option>
-        <option value="GBPUSD=X" {% if currency_pairs == "GBPUSD=X" %}selected{% endif %}>GBP/USD</option>
-        <option value="USDJPY=X" {% if currency_pairs == "USDJPY=X" %}selected{% endif %}>USD/JPY</option>
-        <option value="AUDUSD=X" {% if currency_pairs == "AUDUSD=X" %}selected{% endif %}>AUD/USD</option>
-        <option value="USDCAD=X" {% if currency_pairs == "USDCAD=X" %}selected{% endif %}>USD/CAD</option>
-    </select>
-    <br><br>
-    <label for="prediction_days">Number of days to predict:</label>
-    <input type="number" name="prediction_days" id="prediction_days" min="1" max="5" value="{{ prediction_days }}" required>
-    <br><br>
-    <button type="submit">Predict</button>
-</form>
+<h1 class="text-center">Forex Trend Prediction</h1>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="stock" class="form-label">Enter currency pairs Ticker:</label>
+                <input type="text" class="form-control" id="stock" name="stock" value="POWERGRID.NS">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <!-- <form method="POST" action="/prediction_page" style="text-align: center;">
+        <label for="currency_pairs">Please select the currency pairs for predictions:</label>
+        <select name="currency_pairs" id="currency_pairs" required>
+            <option value="EURUSD=X" {% if currency_pairs == "EURUSD=X" %}selected{% endif %}>EUR/USD</option>
+            <option value="GBPUSD=X" {% if currency_pairs == "GBPUSD=X" %}selected{% endif %}>GBP/USD</option>
+            <option value="USDJPY=X" {% if currency_pairs == "USDJPY=X" %}selected{% endif %}>USD/JPY</option>
+            <option value="AUDUSD=X" {% if currency_pairs == "AUDUSD=X" %}selected{% endif %}>AUD/USD</option>
+            <option value="USDCAD=X" {% if currency_pairs == "USDCAD=X" %}selected{% endif %}>USD/CAD</option>
+        </select>
+        <br><br>
+        <label for="prediction_days">Number of days to predict:</label>
+        <input type="number" name="prediction_days" id="prediction_days" min="1" max="5" value="{{ prediction_days }}" required>
+        <br><br>
+        <button type="submit">Predict</button>
+    </form> -->
 
 {% if error %}
     <p style="color: red; text-align: center;">{{ error }}</p>
