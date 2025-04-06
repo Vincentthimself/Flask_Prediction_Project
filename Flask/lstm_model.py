@@ -14,6 +14,7 @@ import datetime
 import os
 import matplotlib.dates as mdates
 import mplcursors
+import joblib
 
 # Import to ignore warnings
 import warnings
@@ -71,6 +72,8 @@ print(scaled_train_data.shape)
 # Scale the test data using the same scaler fitted on the training data
 scaled_test_data = scaler.transform(raw_test_data)
 # print(scaled_test_data)
+# Save the scaler
+joblib.dump(scaler, 'minmax_scaler.pkl')
 
 # Create empty lists for features 
 x_train = [] # features 
@@ -205,26 +208,26 @@ plt.ylabel('Price')
 plt.legend()
 plt.show()
 
-# # # Prompt user for number of days to predict
-# # while True:
-# #     try:
-# #         days_to_predict = int(input("Enter the number of days to predict (1-5): "))
-# #         if 1 <= days_to_predict <= 5:
-# #             break
-# #         else:
-# #             print("Please enter a number between 1 and 5.")
-# #     except ValueError:
-# #         print("Invalid input. Please enter a number between 1 and 5.")
+# # Prompt user for number of days to predict
+# while True:
+#     try:
+#         days_to_predict = int(input("Enter the number of days to predict (1-5): "))
+#         if 1 <= days_to_predict <= 5:
+#             break
+#         else:
+#             print("Please enter a number between 1 and 5.")
+#     except ValueError:
+#         print("Invalid input. Please enter a number between 1 and 5.")
 
-# # # Predict future prices for the specified number of days
-# # future_predictions = []
-# # last_90_days = test_data[-90:]
+# # Predict future prices for the specified number of days
+# future_predictions = []
+# last_90_days = test_data[-90:]
 
-# # for _ in range(days_to_predict):
-# #     last_90_days_reshaped = last_90_days.reshape((1, last_90_days.shape[0], 1))
-# #     next_day_prediction = model.predict(last_90_days_reshaped)
-# #     future_predictions.append(next_day_prediction[0, 0])
-# #     last_90_days = np.append(last_90_days[1:], next_day_prediction)
+# for _ in range(days_to_predict):
+#     last_90_days_reshaped = last_90_days.reshape((1, last_90_days.shape[0], 1))
+#     next_day_prediction = model.predict(last_90_days_reshaped)
+#     future_predictions.append(next_day_prediction[0, 0])
+#     last_90_days = np.append(last_90_days[1:], next_day_prediction)
 
 # # future_predictions = np.array(future_predictions).reshape(-1, 1)
 # # future_predictions = scaler.inverse_transform(future_predictions)

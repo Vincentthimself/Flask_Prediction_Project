@@ -8,23 +8,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forex Trend Prediction</title>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin-top: 50px;
+            max-height: auto;
+        }
+        .chart-container {
+            margin-top: 30px;
+        }
+        /* .table-responsive {
+            margin-top: 20px;
+        }
+        .download-link {
+            margin-top: 20px;
+        } */ */
+    </style>
 </head>
 
 <body>
-    
-</body>
-</html>
+    <div class="contianer">
+        <h1 class="text-center">Forex Trend Prediction</h1>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="stock" class="form-label">Enter currency pairs Ticker:</label>
+                        <input type="text" class="form-control" id="currency_pairs" name="currency_pairs" value="EURUSD=X">
+                        <!-- <select name="currency" id="currency_pairs">
+                            <option value="EURUSD">EURUSD</option>
+                            <option value="GPBUSD">GPBUSD</option>
+                            <option value="JPYUSD">JPYUSD</option>
+                            <option value="AUDUSD">AUDUSD</option>
+                        </select> -->
+                    <br><label for="days" class="form-label">Enter days to predict</label>
+                        <input type="number" class="form-control" id="days_to_predict" name="days_to_predict">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+        {% if error %}
+            <p style="color: red; text-align: center;">{{ error }}</p>
+        {% endif %}
 
 
-
-<h1 class="text-center">Forex Trend Prediction</h1>
-    <form method="POST">
-        <div class="mb-3">
-            <label for="stock" class="form-label">Enter currency pairs Ticker:</label>
-                <input type="text" class="form-control" id="stock" name="stock" value="POWERGRID.NS">
+        {% if plot_path_ema_20_50 %}
+        <div class="chart-container">
+            <h3>Closing Price vs Time (20 & 50 Days EMA)</h3>
+            <img src="{{ url_for('static', filename='ema_20_50.png') }}" class="img-fluid" alt="EMA 20 & 50">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+        {% endif %}
+
+        {% if plot_currency_prediction %}
+        <div class="chart-container">
+            <h3>Prediction vs Original Trend</h3>
+            <img src="{{ url_for('static', filename='currency_prediction.png')}}" class="img-fluid", alt="Currency prediction">
+        </div>
+        {% endif %}
+
+    </div>
+   
 
     <!-- <form method="POST" action="/prediction_page" style="text-align: center;">
         <label for="currency_pairs">Please select the currency pairs for predictions:</label>
@@ -42,12 +83,18 @@
         <button type="submit">Predict</button>
     </form> -->
 
-{% if error %}
-    <p style="color: red; text-align: center;">{{ error }}</p>
-{% endif %}
+    
 
-{% if predictions %}
-    <h2 style="text-align: center;">Prediction Results</h2>
+
+
+       
+
+
+    
+
+
+<!-- {% if predictions %} -->
+    <!-- <h2 style="text-align: center;">Prediction Results</h2>
     <table style="margin: 0 auto; border-collapse: collapse; text-align: center;">
         <thead>
             <tr>
@@ -63,6 +110,25 @@
                 </tr>
             {% endfor %}
         </tbody>
-    </table>
-{% endif %}
+    </table> -->
+
+    <!-- <script>
+        // Add event listener for the button click
+        $('#predict_button').on('click', function() {
+            $.ajax({
+                url: '/real_time_prediction',  // Define the Flask route for prediction
+                type: 'POST',
+                success: function(response) {
+                    // Update the page with the prediction result
+                    $('#prediction_result').html("Predicted Price: " + response.prediction);
+                },
+                error: function() {
+                    alert('Error occurred while fetching the prediction.');
+                }
+            });
+        });
+    </script> -->
+<!-- {% endif %} -->
 {% endblock %}
+</body>
+</html>
