@@ -14,8 +14,10 @@ import os
 import matplotlib.dates as mdates
 import mplcursors
 import joblib
-from flask import Blueprint, url_for, render_template, request
+from flask import Blueprint, url_for, render_template, request, redirect
 from flask_login import login_required, current_user
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
 plt.style.use("fivethirtyeight")
 
 prediction = Blueprint('prediction', __name__)
@@ -28,7 +30,6 @@ def lstm_prediction():
     if request.method == 'POST':
         currency_pairs = request.form.get('currency_pairs')
         days_to_predict = request.form.get('days_to_predict')
-        # prediction_days = int(request.form.get'prediction_days')
         if not currency_pairs:
             currency_pairs = 'EURUSD=X'  # Default stock if none is entered
         if not days_to_predict or not days_to_predict.isdigit() or int(days_to_predict) <= 0:
@@ -37,12 +38,9 @@ def lstm_prediction():
         
         # Download historical data
         data = yf.download(currency_pairs, start='2020-01-01', end=datetime.datetime.today().strftime('%Y-%m-%d'))
-        # Focus on 'Close' prices
         data = data[['Close']].dropna()  # Drop NaN values if any
         if data.empty:
             return render_template('prediction.html', error="Invalid currency pair or no data available.", user=current_user)
-
-        # data_desc = data.describe()   
 
         # Exponential Moving Averages
         ema20 = data.Close.ewm(span=20, adjust=False).mean()
@@ -83,10 +81,15 @@ def lstm_prediction():
             future_predictions = np.array(future_predictions).reshape(-1, 1)
             future_predictions = scaler.inverse_transform(future_predictions)
 
-
             # Create a new DataFrame for future predictions
             future_dates = pd.date_range(start=data.index[-1] + pd.Timedelta(days=1), periods=days_to_predict)
             future_df = pd.DataFrame(future_predictions, index=future_dates, columns=['Predicted Price'])
+
+            # Convert DataFrame to a list of dictionaries for the template
+            future_predictions_list = [
+                {'date': date.strftime('%Y-%m-%d'), 'Predicted Price': price[0]}
+                for date, price in zip(future_df.index, future_df.values)
+            ]
 
             # Plotting future predictions with the last month of historical data
             plt.figure(figsize=(12, 6))
@@ -94,25 +97,10 @@ def lstm_prediction():
             # Determine the start date for the last month of data
             last_month_start = data.index[-1] - pd.DateOffset(days=30)
 
-
-            fig1, ax1 = plt.subplots(figsize=(12,8))
-            ax1.plot(data.Close, 'y', label='Closing Price')
-            ax1.plot(ema20, 'g', label='EMA 20')
-            ax1.plot(ema50, 'r', label='EMA 50')
-            ax1.set_title("Closing Price vs TIME (20 and 50 Days EMA)")
-            ax1.set_xlabel("Time")
-            ax1.set_ylabel("Price")
-            ax1.legend()
-            ema_chart_path = "Flask/static/ema_20_50.png"
-            fig1.savefig(ema_chart_path)
-            plt.close(fig1)
-
-
-
             fig2, ax2 = plt.subplots(figsize=(12,8))
             ax2.plot(data.loc[last_month_start:, 'Close'], label='Last Month Historical Price')
             ax2.plot(future_df['Predicted Price'], label='Future Predicted Price', linestyle='--')
-            ax2.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%y'))
+            ax2.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m'))
             ax2.grid(True)
             ax2.set_title('Stock Price Prediction with Future Forecast')
             ax2.set_xlabel('Date')
@@ -125,18 +113,114 @@ def lstm_prediction():
             mplcursors.cursor(hover=True)
 
 
+
+
+            # Fuzzy Logic Integration
+            # Compute MACD
+            exp12 = data['Close'].ewm(span=12, adjust=False).mean()
+            exp26 = data['Close'].ewm(span=26, adjust=False).mean()
+            macd_line = exp12 - exp26
+            signal_line = macd_line.ewm(span=9, adjust=False).mean()
+            data['MACD_hist'] = macd_line - signal_line
+
+            # Compute RSI
+            delta = data['Close'].diff()
+            gain = delta.where(delta > 0, 0)
+            loss = -delta.where(delta < 0, 0)
+            avg_gain = gain.rolling(14).mean()
+            avg_loss = loss.rolling(14).mean()
+            rs = avg_gain / avg_loss
+            data['RSI'] = 100 - (100 / (1 + rs))
+
+            # Compute Stochastic Oscillator
+            low14 = data['Close'].rolling(14).min()
+            high14 = data['Close'].rolling(14).max()
+            data['%K'] = (data['Close'] - low14) / (high14 - low14) * 100
+
+            # Define fuzzy variables
+            macd_range = np.arange(-1, 1, 0.001)
+            rsi_range = np.arange(0, 100, 0.1)
+            stochastic_range = np.arange(0, 100, 0.1)
+            action_range = np.arange(-1, 1.01, 0.01)
+
+            macd = ctrl.Antecedent(macd_range, 'macd')
+            rsi = ctrl.Antecedent(rsi_range, 'rsi')
+            stochastic = ctrl.Antecedent(stochastic_range, 'stochastic')
+            action = ctrl.Consequent(action_range, 'action')
+
+            # Define membership functions
+            macd['low'] = fuzz.trimf(macd_range, [-1, -0.5, 0])
+            macd['high'] = fuzz.trimf(macd_range, [0, 0.5, 1])
+
+            rsi['low'] = fuzz.trimf(rsi_range, [0, 15, 35])
+            rsi['medium'] = fuzz.trimf(rsi_range, [30, 50, 70])
+            rsi['high'] = fuzz.trimf(rsi_range, [65, 85, 100])
+
+            stochastic['low'] = fuzz.trimf(stochastic_range, [0, 10, 30])
+            stochastic['medium'] = fuzz.trimf(stochastic_range, [25, 50, 75])
+            stochastic['high'] = fuzz.trimf(stochastic_range, [70, 90, 100])
+
+            action['sell'] = fuzz.trimf(action_range, [-1, -1, -0.5])
+            action['hold'] = fuzz.trimf(action_range, [-0.5, 0, 0.5])
+            action['buy'] = fuzz.trimf(action_range, [0.5, 1, 1])
+
+            # Define fuzzy rules
+            rules = [
+                ctrl.Rule(macd['low'] & rsi['low'] & stochastic['low'], action['buy']),
+                ctrl.Rule(macd['low'] & rsi['low'] & stochastic['medium'], action['buy']),
+                ctrl.Rule(macd['low'] & rsi['low'] & stochastic['high'], action['hold']),
+                ctrl.Rule(macd['low'] & rsi['medium'] & stochastic['low'], action['hold']),
+                ctrl.Rule(macd['low'] & rsi['medium'] & stochastic['medium'], action['hold']),
+                ctrl.Rule(macd['low'] & rsi['medium'] & stochastic['high'], action['sell']),
+                ctrl.Rule(macd['low'] & rsi['high'] & stochastic['low'], action['sell']),
+                ctrl.Rule(macd['low'] & rsi['high'] & stochastic['medium'], action['sell']),
+                ctrl.Rule(macd['low'] & rsi['high'] & stochastic['high'], action['sell']),
+                ctrl.Rule(macd['high'] & rsi['low'] & stochastic['low'], action['buy']),
+                ctrl.Rule(macd['high'] & rsi['low'] & stochastic['medium'], action['buy']),
+                ctrl.Rule(macd['high'] & rsi['low'] & stochastic['high'], action['buy']),
+                ctrl.Rule(macd['high'] & rsi['medium'] & stochastic['low'], action['hold']),
+                ctrl.Rule(macd['high'] & rsi['medium'] & stochastic['medium'], action['hold']),
+                ctrl.Rule(macd['high'] & rsi['medium'] & stochastic['high'], action['sell']),
+                ctrl.Rule(macd['high'] & rsi['high'] & stochastic['low'], action['sell']),
+                ctrl.Rule(macd['high'] & rsi['high'] & stochastic['medium'], action['sell']),
+                ctrl.Rule(macd['high'] & rsi['high'] & stochastic['high'], action['sell'])
+            ]
+
+            # Create fuzzy control system
+            trading_ctrl = ctrl.ControlSystem(rules)
+            trading_sim = ctrl.ControlSystemSimulation(trading_ctrl)
+
+            # Generate signals
+            signals = []
+            for idx in range(len(data)):
+                try:
+                    trading_sim.input['macd'] = data['MACD_hist'].iloc[idx]
+                    trading_sim.input['rsi'] = data['RSI'].iloc[idx]
+                    trading_sim.input['stochastic'] = data['%K'].iloc[idx]
+                    trading_sim.compute()
+                    action_value = trading_sim.output['action']
+                    if action_value <= -0.25:
+                        signals.append('sell')
+                    elif -0.25 < action_value <= 0.25:
+                        signals.append('hold')
+                    else:
+                        signals.append('buy')
+                except:
+                    signals.append('hold')
+
+            data['Signal'] = signals
+
         except FileNotFoundError:
             return render_template('prediction.html', error="Scaler file not found. Please train the model first.", user=current_user)
         except Exception as e:
             return render_template('prediction.html', error="An error occurred during prediction: " + str(e), user=current_user)
         return render_template('prediction.html', 
                                currency_pairs=currency_pairs, 
-                               plot_path_ema_20_50=ema_chart_path,
                                plot_currency_prediction=currency_prediction,
                                days_to_predict=days_to_predict, 
-                               future_predictions=future_predictions, 
-                               data=data,
+                               predictions=future_predictions_list,  # Pass the formatted predictions
+                               signals=data[['Signal']].to_dict(orient='records'),  # Pass signals to the template
                                user=current_user)       
         
     return render_template('prediction.html', user=current_user)
-       
+
