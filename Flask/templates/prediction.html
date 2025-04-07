@@ -50,6 +50,11 @@
                             <option value="3">3 Day</option>
                             <option value="4">4 Day</option>
                             <option value="5">5 Day</option>
+                            <option value="6">6 Day</option>
+                            <option value="7">7 Day</option>
+                            <option value="8">8 Day</option>
+                            <option value="9">9 Day</option>
+                            <option value="10">10 Day</option>
                         </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -112,6 +117,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+        {% endif %}
+
+        {% if plot_currency_prediction %}
+            <div class="chart-container">
+                <h3>Fuzzy Prediction</h3>
+                <img src="{{ url_for('static', filename='fuzzy_signals_plot.png')}}" class="img-fluid" alt="Currency prediction">
+            </div>
         {% endif %}
     </div>
 </body>

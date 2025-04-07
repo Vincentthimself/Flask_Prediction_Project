@@ -6,12 +6,12 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 from datetime import datetime, timedelta
 
-# # download data for the past 5 years
-# symbol = 'EURUSD=X'
-# end_date = datetime.now().strftime('%Y-%m-%d')
-# start_date = (datetime.now() - timedelta(days=5*365)).strftime('%Y-%m-%d')
-# data = yf.download(symbol, start=start_date, end=end_date, progress=False)
-# data = data[['Close']]
+# download data for the past 5 years
+symbol = 'EURUSD=X'
+end_date = datetime.now().strftime('%Y-%m-%d')
+start_date = (datetime.now() - timedelta(days=5*365)).strftime('%Y-%m-%d')
+data = yf.download(symbol, start=start_date, end=end_date, progress=False)
+data = data[['Close']]
 
 # compute the MACD
 exp12 = data['Close'].ewm(span=12, adjust=False).mean()
