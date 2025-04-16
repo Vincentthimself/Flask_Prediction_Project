@@ -120,7 +120,7 @@ def lstm_prediction():
 
             # Plotting future predictions with the last month of historical data
             plt.figure(figsize=(12, 6))
-            last_month_start = data.index[-1] - pd.DateOffset(days=30)
+            last_month_start = data.index[-1] - pd.DateOffset(days=20)
             fig2, ax2 = plt.subplots(figsize=(12, 8))
             ax2.plot(data.loc[last_month_start:, 'Close'], label='Last Month Historical Price')
             ax2.plot(future_df.index, future_df['Predicted Price'], 'ro-', label=f'Predicted Price {days_to_predict} days', markersize=8)      
@@ -134,6 +134,7 @@ def lstm_prediction():
             plt.close(fig2)
             # Enable interactive tooltips
             mplcursors.cursor(hover=True)
+
 
             print('\nModel Performance Metrics:')
             print('Mean Absolute Error:', mae)
@@ -163,7 +164,7 @@ def lstm_prediction():
             avg_gain = gain.rolling(14).mean()
             avg_loss = loss.rolling(14).mean()
             rs = avg_gain / avg_loss
-            future_df['Predicted Price'] = 100 - (100 / (1 + rs))
+            future_df['RSI'] = 100 - (100 / (1 + rs))  # Fix: Add RSI column to future_df
 
             # Compute Stochastic Oscillator on future_df
             low14 = future_df['Predicted Price'].rolling(14).min()
@@ -243,8 +244,9 @@ def lstm_prediction():
 
             future_df['Signal'] = signals
 
+            # Reset index to include the date as a column
+            future_df_reset = future_df.reset_index()
 
-            
             # Fuzzy Logic Visualization
             fig3, ax3 = plt.subplots(figsize=(12, 8))
             ax3.plot(data.loc[last_month_start:, 'Close'], label='Last Month Historical Price')
@@ -256,15 +258,17 @@ def lstm_prediction():
             ax3.scatter(buy_signals.index, buy_signals['Predicted Price'], c='g', marker='^', s=100, label='Buy Signal')
             ax3.scatter(sell_signals.index, sell_signals['Predicted Price'], c='r', marker='v', s=100, label='Sell Signal')
  
-            ax3.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m'))
+            # Fix date formatting and label rotation
+            ax3.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y'))  # Ensure full date is displayed
+            plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
+
             ax3.grid(True)
             ax3.set_title('Fuzzy Logic Buy/Sell Signals')
-            ax3.set_xlabel('Date')
             ax3.set_ylabel('Price')
             ax3.legend()
             fuzzy_signals_plot = "Flask/static/fuzzy_signals_plot.png"
             fig3.savefig(fuzzy_signals_plot)
-            plt.close(fig2)
+            plt.close(fig3)
 
         except FileNotFoundError:
             return render_template('prediction.html', error="Scaler file not found. Please train the model first.", user=current_user)
@@ -279,7 +283,7 @@ def lstm_prediction():
                                mae=mae,  # Pass Mean Absolute Error
                                rmse=rmse,  # Pass Root Mean Squared Error
                                r2=r2,  # Pass R-squared
-                               signals=future_df[['Signal']].to_dict(orient='records'),  # Pass signals to the template
+                               signals=future_df_reset[['index', 'Signal']].rename(columns={'index': 'Date'}).to_dict(orient='records'),  # Pass signals with dates to the template
                                fuzzy_signals_plot=fuzzy_signals_plot,
                                user=current_user)       
         
